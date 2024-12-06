@@ -1,0 +1,27 @@
+{
+    "id": "DDAC6B85",
+    "path": "~/Documents/Research/Tongji/SFTS_importance_transmission_route/Clean code/2_estimate_R0_sens_elas.R",
+    "project_path": "2_estimate_R0_sens_elas.R",
+    "type": "r_source",
+    "hash": "2629472026",
+    "contents": "",
+    "dirty": false,
+    "created": 1733106600784.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "80,8",
+        "scrollLine": "59"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1733450621,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1733450621531,
+    "read_only": false,
+    "read_only_alternatives": []
+}

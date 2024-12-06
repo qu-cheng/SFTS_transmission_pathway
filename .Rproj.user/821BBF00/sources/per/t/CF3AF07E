@@ -1,0 +1,27 @@
+{
+    "id": "CF3AF07E",
+    "path": "~/Documents/Research/Tongji/SFTS_importance_transmission_route/Clean code/3_fit_RF_models.R",
+    "project_path": "3_fit_RF_models.R",
+    "type": "r_source",
+    "hash": "2556686545",
+    "contents": "",
+    "dirty": false,
+    "created": 1733373183636.0,
+    "source_on_save": false,
+    "relative_order": 7,
+    "properties": {
+        "tempName": "Untitled2",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "93,47",
+        "scrollLine": "88"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1733379690,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1733379690653,
+    "read_only": false,
+    "read_only_alternatives": []
+}
