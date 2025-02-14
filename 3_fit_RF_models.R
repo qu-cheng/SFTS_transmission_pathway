@@ -58,6 +58,7 @@ results.all.withpar <- results.all %>%
 
 # train RF models and get variable importance; 5 outcomes and 9 scenarios
 Outcome <- c("R0", "systemic", "nonsystemic", "vertical", "pattern")
+R.square <- list()
 for(out.i in 1:5)   # loop over 5 outcomes
 {
   rf.imp <- NULL
@@ -83,6 +84,8 @@ for(out.i in 1:5)   # loop over 5 outcomes
         rand_frst <-  tuneRanger(task)
         rand_all_result <- ranger(as.formula(paste(Outcome[out.i], "~.")), data=current.dat, importance = "permutation", mtry = rand_frst$recommended.pars$mtry, min.node.size = rand_frst$recommended.pars$min.node.size, sample.fraction = rand_frst$recommended.pars$sample.fraction)
         
+        R.square <- c(R.square, rand_all_result$r.squared)
+        
         if(out.i != 5)
         {
           for(par.i in 1:length(par.names))
@@ -95,13 +98,13 @@ for(out.i in 1:5)   # loop over 5 outcomes
             rf.pdp <- rbind(rf.pdp, current.pdp)
           }
         }
-        
-        
+
+
         # record the importance from 100 random draws of 80% of the training data
         for(i in 1:100)
         {
           rand_result <- ranger(as.formula(paste(Outcome[out.i], "~.")), data=current.dat[sample(1:1000, 800, replace = TRUE),], importance = "permutation", mtry = rand_frst$recommended.pars$mtry, min.node.size = rand_frst$recommended.pars$min.node.size, sample.fraction = rand_frst$recommended.pars$sample.fraction)
-          rf.imp <- rbind(rf.imp, 
+          rf.imp <- rbind(rf.imp,
                           data.frame(variable = names(rand_result$variable.importance), importance =rand_result$variable.importance, ID = i, K.sce = k.sce, I.sce = i.sce, N.sce = n.sce))
         }
       }

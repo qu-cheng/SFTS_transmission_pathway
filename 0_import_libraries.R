@@ -12,6 +12,9 @@ library(EnvStats)
 library(tuneRanger)
 library(pdp)
 library(paletteer)
+library(showtext)
+
+showtext.auto()
 
 set.seed(20240710)
 

@@ -203,12 +203,12 @@ ggsave("Figures/FigST2.1.pdf", width = 7, height = 6)
 #                       ternary plots by scenarios
 #====================================================================================
 results.all %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "I = 1~5", 
-                           I.sce == 2 ~ "I = 5.01~9", 
-                           I.sce == 3 ~ "I = 9.01~12"),
-         N.sce = case_when(N.sce == 1 ~ "N = 0.01~2",
-                           N.sce == 2 ~ "N = 2~5",
-                           N.sce == 3 ~ "N = 5~12"),
+  mutate(I.sce = case_when(I.sce == 1 ~ "I = 1–5", 
+                           I.sce == 2 ~ "I = 5.01–9", 
+                           I.sce == 3 ~ "I = 9.01–12"),
+         N.sce = case_when(N.sce == 1 ~ "N = 0.01–2",
+                           N.sce == 2 ~ "N = 2–5",
+                           N.sce == 3 ~ "N = 5–12"),
          K.sce = case_when(K.sce == 0.05 ~ "k = 0.05",
                            K.sce == 0.15 ~ "k = 0.15",
                            K.sce == 0.5 ~ "k = 0.5"),
@@ -274,31 +274,35 @@ elas.mat.kij.all %>%
   left_join(data.frame(i = rep(c("TIE", "TIL", "TIN", "TIA", "H"), 5), j = rep(c("TIE", "TIL", "TIN", "TIA", "H"), each = 5), element = paste("V", 1:25, sep = ""))) %>%
   mutate(i = factor(i, levels = rev(c("TIE", "TIL", "TIN", "TIA", "H"))),
          j = factor(j, levels = c("TIE", "TIL", "TIN", "TIA", "H"))) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "I = 1~5", 
-                           I.sce == 2 ~ "I = 5~9", 
-                           I.sce == 3 ~ "I = 9~12"),
-         N.sce = case_when(N.sce == 1 ~ "N = 0.01~2",
-                           N.sce == 2 ~ "N = 2~5",
-                           N.sce == 3 ~ "N = 5~12"),
+  mutate(I.sce = case_when(I.sce == 1 ~ "I = 1-5", 
+                           I.sce == 2 ~ "I = 5-9", 
+                           I.sce == 3 ~ "I = 9-12"),
+         N.sce = case_when(N.sce == 1 ~ "N = 0.01-2",
+                           N.sce == 2 ~ "N = 2-5",
+                           N.sce == 3 ~ "N = 5-12"),
          panel.title = paste(N.sce, I.sce, sep = ", "),
-         eij = ifelse(eij == 0, NA, eij)) %>%
+         eij = ifelse(eij == 0, NA, eij),
+         eij.color = ifelse(eij >= 0.15, "white", "black")) %>%
   ggplot(aes(x = j, y = i, fill = eij)) +
   geom_tile() +
-  geom_text(aes(label = round(eij, 3))) +
-  facet_wrap(~panel.title,  labeller = as_labeller(make_labelstring_eij)) +
+  geom_text(aes(label = round(eij, 3), col = eij.color)) +
+  facet_grid(cols = vars(I.sce), rows = vars(N.sce),
+             switch = "y") +
   theme_cowplot() +
   theme(legend.position = "bottom",
-        strip.background = element_blank(),
-        strip.text = element_text(hjust = 0, size = 15),
+        strip.text = element_text(size = 15),
         legend.key.width = unit(4, "cm"),
         axis.title = element_text(size = 15),
         axis.text = element_text(size = 14),
-        legend.title = element_text(size = 15)) +
+        legend.title = element_text(size = 15),
+        strip.placement = "outside") +
   scale_x_discrete(expand = c(0,0)) +
   scale_y_discrete(expand = c(0,0)) +
   coord_equal() +
   labs(x = "From", y = "To", fill = expression(e[ij])) +
-  scale_fill_distiller(direction = 1, na.value = "gray80")
+  scale_fill_distiller(direction = 1, na.value = "gray95") +
+  scale_color_manual(values = c("black", "white")) +
+  guides(col = FALSE)
 ggsave("Figures/FigS2_relative_contribution_eij_heatmap_0.05.pdf", width = 10, height = 11)
 
 
@@ -321,31 +325,35 @@ elas.mat.kij.all %>%
   left_join(data.frame(i = rep(c("TIE", "TIL", "TIN", "TIA", "H"), 5), j = rep(c("TIE", "TIL", "TIN", "TIA", "H"), each = 5), element = paste("V", 1:25, sep = ""))) %>%
   mutate(i = factor(i, levels = rev(c("TIE", "TIL", "TIN", "TIA", "H"))),
          j = factor(j, levels = c("TIE", "TIL", "TIN", "TIA", "H"))) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "I = 1~5", 
-                           I.sce == 2 ~ "I = 5~9", 
-                           I.sce == 3 ~ "I = 9~12"),
-         N.sce = case_when(N.sce == 1 ~ "N = 0.01~2",
-                           N.sce == 2 ~ "N = 2~5",
-                           N.sce == 3 ~ "N = 5~12"),
+  mutate(I.sce = case_when(I.sce == 1 ~ "I = 1-5", 
+                           I.sce == 2 ~ "I = 5-9", 
+                           I.sce == 3 ~ "I = 9-12"),
+         N.sce = case_when(N.sce == 1 ~ "N = 0.01-2",
+                           N.sce == 2 ~ "N = 2-5",
+                           N.sce == 3 ~ "N = 5-12"),
          panel.title = paste(N.sce, I.sce, sep = ", "),
-         eij = ifelse(eij == 0, NA, eij)) %>%
+         eij = ifelse(eij == 0, NA, eij),
+         eij.color = ifelse(eij >= 0.15, "white", "black")) %>%
   ggplot(aes(x = j, y = i, fill = eij)) +
   geom_tile() +
-  geom_text(aes(label = round(eij, 3))) +
-  facet_wrap(~panel.title,  labeller = as_labeller(make_labelstring_eij)) +
+  geom_text(aes(label = round(eij, 3), col = eij.color)) +
+  facet_grid(cols = vars(I.sce), rows = vars(N.sce),
+             switch = "y") +
   theme_cowplot() +
   theme(legend.position = "bottom",
-        strip.background = element_blank(),
-        strip.text = element_text(hjust = 0, size = 15),
+        strip.text = element_text(size = 15),
         legend.key.width = unit(4, "cm"),
         axis.title = element_text(size = 15),
         axis.text = element_text(size = 14),
-        legend.title = element_text(size = 15)) +
+        legend.title = element_text(size = 15),
+        strip.placement = "outside") +
   scale_x_discrete(expand = c(0,0)) +
   scale_y_discrete(expand = c(0,0)) +
   coord_equal() +
   labs(x = "From", y = "To", fill = expression(e[ij])) +
-  scale_fill_distiller(direction = 1, na.value = "gray80")
+  scale_fill_distiller(direction = 1, na.value = "gray95") +
+  scale_color_manual(values = c("black", "white")) +
+  guides(col = FALSE)
 ggsave("Figures/FigS3_relative_contribution_eij_heatmap_0.5.pdf", width = 10, height = 11)
 
 
@@ -409,12 +417,12 @@ plot.a <- sens.summary %>%
   group_by(parameter) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -445,12 +453,12 @@ plot.b <- elas.summary %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = round(rank(-value))) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -479,12 +487,12 @@ plot.c <- RF.summary %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -531,12 +539,12 @@ plot.a <- sens.summary %>%
   group_by(parameter) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -567,12 +575,12 @@ plot.b <- elas.summary %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = round(rank(-value))) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -601,12 +609,12 @@ plot.c <- RF.summary %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -655,12 +663,12 @@ plot.a <- sens.summary %>%
   group_by(parameter) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -691,12 +699,12 @@ plot.b <- elas.summary %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = round(rank(-value))) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -725,12 +733,12 @@ plot.c <- RF.summary %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -777,12 +785,12 @@ pdp_R0 <- read.csv("Results/RF_pdp_R0.csv") %>%
 
 pdp_R0 %>%
   filter(K.sce ==0.15) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   filter(par.name %in% c("Ra", "E", "Sl", "Sn", "Sa", "Hcn", "Cs")) %>%
   group_by(K.sce, I.sce, N.sce, outcome, par.name) %>%
   mutate(par.std = (par - min(par))/(max(par) - min(par)),
@@ -821,12 +829,12 @@ plot.a <-  RF.summary %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -867,12 +875,12 @@ plot.b <- read.csv("Results/RF_imp_systemic.csv") %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -912,12 +920,12 @@ plot.c <- read.csv("Results/RF_imp_nonsystemic.csv") %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -957,12 +965,12 @@ plot.d <- read.csv("Results/RF_imp_vertical.csv") %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels =rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -1004,12 +1012,12 @@ plot.e <- read.csv("Results/RF_imp_pattern.csv") %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -1055,12 +1063,12 @@ plot.a <-  RF.summary %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -1101,12 +1109,12 @@ plot.b <- read.csv("Results/RF_imp_systemic.csv") %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -1146,12 +1154,12 @@ plot.c <- read.csv("Results/RF_imp_nonsystemic.csv") %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -1191,12 +1199,12 @@ plot.d <- read.csv("Results/RF_imp_vertical.csv") %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels =rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -1238,12 +1246,12 @@ plot.e <- read.csv("Results/RF_imp_pattern.csv") %>%
   arrange(average) %>%
   mutate(parameter = factor(parameter, levels = rev(import.order$parameter)),
          scenarios = paste(N.sce, I.sce, sep = ", ")) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   group_by(N.sce, I.sce) %>%
   mutate(value.order = rank(-value)) %>%
   ggplot(aes(x = I.sce, y = parameter, fill = value)) +
@@ -1286,12 +1294,12 @@ pdp_sys <- read.csv("Results/RF_pdp_systemic.csv") %>%
 
 pdp_sys %>%
   filter(K.sce ==0.15) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   filter(par.name %in% c("Hcn", "Cs", "Hcs", "Ra", "Ql", "Sn", "E")) %>%
   group_by(K.sce, I.sce, N.sce, outcome, par.name) %>%
   mutate(par.std = (par - min(par))/(max(par) - min(par)),
@@ -1327,12 +1335,12 @@ pdp_nonsys <- read.csv("Results/RF_pdp_nonsystemic.csv") %>%
 
 pdp_nonsys %>%
   filter(K.sce ==0.15) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   filter(par.name %in% c("Hcn", "Cs", "Ql", "Hcs", "Pa", "I", "Ra")) %>%
   group_by(K.sce, I.sce, N.sce, outcome, par.name) %>%
   mutate(par.std = (par - min(par))/(max(par) - min(par)),
@@ -1368,12 +1376,12 @@ pdp_ver <- read.csv("Results/RF_pdp_vertical.csv") %>%
 
 pdp_ver %>%
   filter(K.sce ==0.15) %>%
-  mutate(I.sce = case_when(I.sce == 1 ~ "1~5", 
-                           I.sce == 2 ~ "5~9", 
-                           I.sce == 3 ~ "9~12"),
-         N.sce = case_when(N.sce == 1 ~ "0.01~2",
-                           N.sce == 2 ~ "2~5",
-                           N.sce == 3 ~ "5~12"))  %>%
+  mutate(I.sce = case_when(I.sce == 1 ~ "1-5", 
+                           I.sce == 2 ~ "5-9", 
+                           I.sce == 3 ~ "9-12"),
+         N.sce = case_when(N.sce == 1 ~ "0.01-2",
+                           N.sce == 2 ~ "2-5",
+                           N.sce == 3 ~ "5-12"))  %>%
   filter(par.name %in% c("Ra", "E", "Sn", "Sl", "Sa", "Hcs", "Ql")) %>%
   group_by(K.sce, I.sce, N.sce, outcome, par.name) %>%
   mutate(par.std = (par - min(par))/(max(par) - min(par)),
